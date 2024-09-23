@@ -1,0 +1,15 @@
+<template>
+
+    <!--Header-->
+    <div class="Polaris-Box" style="--pc-box-padding-block-start-xs:var(--p-space-400);--pc-box-padding-block-start-md:var(--p-space-600);--pc-box-padding-block-end-xs:var(--p-space-400);--pc-box-padding-block-end-md:var(--p-space-600);--pc-box-padding-inline-start-xs:var(--p-space-400);--pc-box-padding-inline-start-sm:var(--p-space-0);--pc-box-padding-inline-end-xs:var(--p-space-400);--pc-box-padding-inline-end-sm:var(--p-space-0);position:relative">
+        <div class="Polaris-Page-Header--mediumTitle">
+
+            <!--Content Header-->
+            <slot></slot>
+            <!--End-->
+        </div>
+
+    </div>
+    <!--Header-->
+
+</template>

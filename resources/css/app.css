@@ -1,0 +1,47 @@
+/*
+@import 'datatables.net-dt';
+*/
+
+/*LvColorPicker */
+.lv-input__group .lv-input__field {
+    height: 36px !important;
+    border: solid 0.5px #8a8a8a !important;
+    font-size: 15px !important;
+    color: #303030 !important;
+    background: #fdfdfd !important;
+    padding: 0px 12px;
+    transition: background-color 0s, color 0s, box-shadow 0s, border-radius 0s !important ;
+    appearance: none;
+    border-radius: 9px !important;
+
+}
+/*end*/
+
+/*input select option*/
+.select-option {
+    background-color: #fdfdfd;
+    border: solid 0.5px #8a8a8a;
+    color: #111827;
+    font-size: 12px;
+    border-radius: 7px;
+    width: 100%;
+    padding: 8px;
+}
+.select-option:focus {
+    outline: 2px solid #2062d0;
+}
+@media (prefers-color-scheme: dark) {
+    .select-option {
+        background-color: #374151;
+        border-color: #4B5563;
+        color: #F3F4F6;
+    }
+    .select-option::placeholder { /* Placeholder Color */
+        color: #9CA3AF;
+    }
+    .select-option:focus {
+        outline: 2px solid #3B82F6;
+        border-color: #3B82F6;
+    }
+}
+/*end*/
