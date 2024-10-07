@@ -15,6 +15,9 @@ store.setInitData(props.size_chart);
 store.setSizeChartData({ ...store.$state });
 </script>
 <template>
+
+
+     new updated in vue pages
     <Page>
         <Header>
             <HeaderPageList @visit="store.visitPageApp()" @tutorial="" @action=""/>
