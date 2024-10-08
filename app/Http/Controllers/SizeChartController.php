@@ -2,13 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SizeChartRequest;
+use App\Http\Requests\VisitorCounterRequest;
 use App\Models\SizeChart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class SizeChartController extends Controller
 {
+
+//SizeChart Setting Page
+    private const WIDGET_OPTIONS_SizeChart = [
+        'Chart Icon','Chart Border','Chart Bottom','Chart Top','Chart Text',
+        'Chart Background Color','Chart Text Color','Chart Border Color',
+        'Chart Border Thickness','Chart Row Background Color',
+    ];
+    public function SizeChartSetting()
+    {
+        $widgetOptions = DB::table('widget_options')
+            ->whereIn('option_name', self::WIDGET_OPTIONS_SizeChart)
+            ->get()
+            ->keyBy('option_name');
+        return Inertia::render('SizeChartSetting',compact('widgetOptions'));
+
+    }
+    public function updateSettingSizeCharts(SizeChartRequest $request)
+    {
+        $validatedData = $request->validated();
+        $this->updateWidgetOptions($validatedData);
+
+        return response()->json([
+            'message' => 'Widget options updated successfully'
+        ], 200);
+    }
+
+    private function updateWidgetOptions($validatedData)
+    {
+        foreach (self::WIDGET_OPTIONS_SizeChart as $option) {
+            DB::table('widget_options')
+                ->where('option_name', $option)
+                ->update(['option_value' => $validatedData[strtolower(str_replace(' ', '_', $option))]]);
+        }
+    }
 
 //SizeChart List Page
     public function SizeChartList()
@@ -18,7 +56,6 @@ class SizeChartController extends Controller
 
         return Inertia::render('SizeChartList',compact('size_chart'));
     }
-    //Delete size chart
     public function DeleteSizeChart($id)
     {
         // Attempt to find a SizeChart with the provided $id
@@ -34,7 +71,6 @@ class SizeChartController extends Controller
 
         return response()->json(['message' => 'Size chart not found'], 404);
     }
-    //Delete selected size chart
     public function deleteSelectedSizeCharts(Request $request)
     {
         $ids = $request->ids;
@@ -48,7 +84,6 @@ class SizeChartController extends Controller
         }
         return response()->json(['message' => 'No size charts selected'], 400);
     }
-    //Deactivate selected size chart
     public function deactivateSelectedCharts(Request $request)
     {
         $ids = $request->ids;
@@ -60,7 +95,6 @@ class SizeChartController extends Controller
         SizeChart::whereIn('id', $ids)->update(['status' => 0]);
         return response()->json();
     }
-    //Duplicate selected size chart
     public function DuplicateSizeChart($id)
     {
         // Attempt to find a SizeChart by the provided ID
@@ -90,7 +124,6 @@ class SizeChartController extends Controller
     }
     public function create(Request $request)
     {
-        // Validate the incoming request data
         Validator::make($request->all(), [
             'internalName' => 'required|string|max:255',
             'titlePopup' => 'required|string|max:255',
@@ -118,10 +151,8 @@ class SizeChartController extends Controller
 //SizeChart Edit Page
     public function editSizeChart($id)
     {
-        // Retrieve the SizeChart object by its id
         $sizeChart = SizeChart::findOrFail($id);
 
-        // Pass the relevant information to the Inertia::render function
         return Inertia::render('EditSizeChart', [
             'sizeChart' => [
                 'id' => $sizeChart->id,
@@ -136,7 +167,6 @@ class SizeChartController extends Controller
     }
     public function update(Request $request, $id)
     {
-        // Run the Validator, which validates the request data
         Validator::make($request->all(), [
             'internalName' => 'required|string|max:255',
             'titlePopup' => 'required|string|max:255',
@@ -162,15 +192,11 @@ class SizeChartController extends Controller
         }
 
     }
-
     public function duplicateEditPage(Request $request)
     {
-        // Retrieve the original size chart
         $originalSizeChart = SizeChart::findOrFail($request->id);
 
-        // Create a new size chart with the same data
         $newSizeChart = $originalSizeChart->replicate();
-        // Set the internal name with the one from the request
         $newSizeChart->internal_name = $request->Name;
 
         $newSizeChart->save();
@@ -179,46 +205,36 @@ class SizeChartController extends Controller
             'sizeChart' => $newSizeChart,
         ]);
     }
-
     public function sizeChartDelete(Request $request)
     {
         $sizeChartId = $request->input('id');
 
-        // Fetch the size chart by its ID
         $sizeChart = SizeChart::find($sizeChartId);
 
         if (!$sizeChart) {
-            // Return an error response if the size chart was not found
             return response()->json([
                 'error' => 'Size chart not found',
             ], 404);
         }
 
-        // Delete the size chart
         $sizeChart->delete();
 
-        // Return a success response
         return response()->json([
             'message' => 'Size chart deleted successfully',
         ], 200);
     }
-
-
     public function publishStatusChart(Request $request)
     {
         $sizeChartId = $request->input('id');
 
-        // Fetch the size chart by its ID
         $sizeChart = SizeChart::find($sizeChartId);
 
         if (!$sizeChart) {
-            // Return an error response if the size chart was not found
             return response()->json([
                 'error' => 'Size chart not found',
             ], 404);
         }
 
-        // Update the status to 'published' (e.g., 1)
         $sizeChart->status = 1;
         $sizeChart->save();
 

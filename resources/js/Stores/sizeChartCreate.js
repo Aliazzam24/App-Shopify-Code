@@ -16,10 +16,10 @@ export const useSizeChartCreateStore = defineStore('sizeChartCreate', {
             ["no", null, null, null],
             ["yes", null, null, null]
         ],
-        status: 0,
+        status: 'active',
         statusOption: [
-            { label: 'Active', value: 1 },
-            { label: 'Draft', value: 0 }
+            { label: 'Active', value: 'active' },
+            { label: 'Draft', value: 'draft' }
         ],
 
         set_product: 'any',
@@ -62,7 +62,7 @@ export const useSizeChartCreateStore = defineStore('sizeChartCreate', {
 
 
         resetPublish() {
-            this.status = 1;
+            this.status = 'active';
         },
 
         discardChanges() {

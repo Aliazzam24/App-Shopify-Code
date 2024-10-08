@@ -1,18 +1,23 @@
 <script setup lang="ts">
-import {watchEffect} from 'vue'
-import {router} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 
-import { useIndexResourceState } from '@ownego/polaris-vue';
+import {LayoutSection, useIndexResourceState} from '@ownego/polaris-vue';
 import { useSizeChartListStore } from "../Stores/sizeChartList.js";
 import ActionsButton from "@/Shared/PolarisButton/ActionsButton.vue";
+import LegacyTabs from "@/Shared/Polaris/LegacyTabs.vue";
 import LoadingPanel from "@/Shared/Polaris/LoadingPanel.vue";
-import PolarisBox from "@/Shared/Polaris/PolarisBox.vue";
+import PolarisBox from "../Shared/Polaris/PolarisBox.vue";
 
 // Initialize the Pinia store
 const props = defineProps({ size_chart: Array });
 const store = useSizeChartListStore();
 store.setInitData(props.size_chart);
 store.updateTime();
+
+
+// Access current route
+const page = usePage();
+const currentRoute = page.url; // Get current route URL
 
 // Handle selection of table rows for bulk actions
 const { selectedResources, handleSelectionChange,allResourcesSelected } = useIndexResourceState(store.size_chart);
@@ -39,73 +44,90 @@ const onDelete = (chartId) => store.showDeleteModal(chartId, selectedResources.v
         <p>{{ store.modalContent }}</p>
     </Modal>
 
-    <Page
-        title="Size Chart"
-        subtitle="Reduce returns and increase sales by showing a size chart on product pages."
-        compactTitle
-        :backAction="{ content: 'Products', onAction: () => router.visit('/') }"
-        :secondaryActions="[{content: 'Tutorial',onAction: () => console.log('Tutorial'),}]"
-        :actionGroups="[{title: 'Active', actions: [{content: 'Deactive Size Chart',onAction: () => console.log('Deactive Size Chart action'),}],}]"
-    >
+    <div class="Polaris-Frame__Content">
+        <Page title="Size Chart" compactTitle
+            :backAction="{ content: 'Products', onAction: () => router.visit('/') }"
+            :secondaryActions="[{content: 'Tutorial',onAction: () => console.log('Tutorial'),}]"
+            :actionGroups="[{title: 'Active', actions: [{content: 'Deactive Size Chart',onAction: () => console.log('Deactive Size Chart action'),}],}]"
 
-        <!--Table-->
-        <LegacyCard>
+        >
+            <Layout>
 
-            <PolarisBox title="Size Chart" @visit="router.visit('/app/size_chart/create')"/>
+                <LayoutSection>
+                    <LegacyTabs
+                        @visitList="router.visit('/app/size_chart/list')"
+                        @visitSetting="router.visit('/app/size_chart/setting')"
+                    />
+                </LayoutSection>
 
-            <LoadingPanel class="polaris-css-animation" v-if="store.processing" :isProcessing="store.processing"/>
+                <LayoutSection>
+                    <LegacyCard>
 
-            <IndexTable
-                :resourceName="store.resourceName"
-                :itemCount="store.size_chart.length"
-                :selectedItemsCount="allResourcesSelected ? 'All' : selectedResources.length"
-                :headings="[ { title: 'Name' }, { title: 'Status' }, { title: 'Last updated time' }, { title: 'Quick action' } ]"
-                :bulkActions="bulkActions"
-                @selection-change="handleSelectionChange"
-            >
+                        <PolarisBox title="Size Chart" @visit="router.visit('/app/size_chart/create')"/>
 
-                <!-- Loop through size_chart data from the store -->
-                <IndexTableRow
-                    v-for="(chart, index) in store.size_chart"
-                    :id="chart.id"
-                    :key="chart.id"
-                    :position="index"
-                    :selected="selectedResources.includes(chart.id)"
-                >
-                    <IndexTableCell>
-                        <div class="Vtl-SizeChartListRow__Wrapper">
+                        <LoadingPanel class="polaris-css-animation" v-if="store.processing" :isProcessing="store.processing"/>
 
-                            <Text variant="bodyMd" fontWeight="bold" as="span">{{ chart.internal_name }}</Text>
-                            <div>
-                                <Text class="Vtl-SizeChartProductsSlot__Selection" variant="bodyMd" fontWeight="bold" as="span">All product</Text>
-                            </div>
-                        </div>
-                    </IndexTableCell>
+                        <IndexTable
+                            :resourceName="store.resourceName"
+                            :itemCount="store.size_chart.length"
+                            :selectedItemsCount="allResourcesSelected ? 'All' : selectedResources.length"
+                            :headings="[ { title: 'Name' }, { title: 'Status' }, { title: 'Last updated time' }, { title: 'Quick action' } ]"
+                            :bulkActions="bulkActions"
+                            @selection-change="handleSelectionChange"
+                        >
 
-                    <IndexTableCell>
-                        <!-- Status Column -->
-                        <Badge :tone="chart.status === 1 ? 'success' : 'info'">
-                            {{ chart.status === 1 ? 'Active' : 'Draft' }}
-                        </Badge>
-                    </IndexTableCell>
+                            <!-- Loop through size_chart data from the store -->
+                            <IndexTableRow
+                                v-for="(chart, index) in store.size_chart"
+                                :id="chart.id"
+                                :key="chart.id"
+                                :position="index"
+                                :selected="selectedResources.includes(chart.id)"
+                            >
+                                <IndexTableCell>
+                                    <div class="Vtl-SizeChartListRow__Wrapper">
 
-                    <IndexTableCell>
-                        {{ store.timeDifference(new Date(chart.updated_at)) }}
-                    </IndexTableCell>
+                                        <Text variant="bodyMd" fontWeight="bold" as="span">{{ chart.internal_name }}</Text>
+                                        <div>
+                                            <Text class="Vtl-SizeChartProductsSlot__Selection" variant="bodyMd" fontWeight="bold" as="span">All product</Text>
+                                        </div>
+                                    </div>
+                                </IndexTableCell>
 
-                    <IndexTableCell>
-                        <ActionsButton
-                            @click.stop
-                            @duplicate="onDuplicate(chart.id)"
-                            @edit="router.visit(`/app/size_chart/edit/${chart.id}`)"
-                            @delete="onDelete(chart.id)"
-                        />
-                    </IndexTableCell>
-                </IndexTableRow>
-            </IndexTable>
+                                <IndexTableCell>
+                                    <!-- Status Column -->
+                                    <Badge :tone="chart.status === 1 ? 'success' : 'info'">
+                                        {{ chart.status === 1 ? 'Active' : 'Draft' }}
+                                    </Badge>
+                                </IndexTableCell>
 
-        </LegacyCard>
-    </Page>
+                                <IndexTableCell>
+                                    {{ store.timeDifference(new Date(chart.updated_at)) }}
+                                </IndexTableCell>
+
+                                <IndexTableCell>
+                                    <ActionsButton
+                                        @click.stop
+                                        @duplicate="onDuplicate(chart.id)"
+                                        @edit="router.visit(`/app/size_chart/edit/${chart.id}`)"
+                                        @delete="onDelete(chart.id)"
+                                    />
+                                </IndexTableCell>
+                            </IndexTableRow>
+                        </IndexTable>
+
+                    </LegacyCard>
+                </LayoutSection>
+
+
+            </Layout>
+
+            <div class="Polaris-Box" style="--pc-box-min-height: 108px;"></div>
+
+        </Page>
+
+    </div>
+
 
 </template>
 <style scoped>
@@ -139,5 +161,6 @@ const onDelete = (chartId) => store.showDeleteModal(chartId, selectedResources.v
     padding: var(--p-space-200);
 }
 
-
 </style>
+
+

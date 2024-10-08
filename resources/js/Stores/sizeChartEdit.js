@@ -10,8 +10,13 @@ export const useSizeChartEditStore = defineStore('sizeChartEdit', {
         columns: 0,
         rows: 0,
         tableData: [],
-        status: 0,
-        statusOption: [{ label: 'Active', value: 1 }, { label: 'Draft', value: 0 }],
+
+        status: 'active',
+
+        statusOption: [
+            { label: 'Active', value: 'active' },
+            { label: 'Draft', value: 'draft' }
+        ],
         addColumnBeforeIndex: '',
         set_product: 'any',
 
@@ -73,12 +78,12 @@ export const useSizeChartEditStore = defineStore('sizeChartEdit', {
         // Publish and reset and delete
         PublishStatusChart() {
             this.processing = true;
-            this.status = 1;
+            this.status = 'active';
 
             axios.post(`/publish/status/chart`, { id: this.id })
                 .then(response => {
                     console.log("Size chart published successfully: ", response);
-                    this.status = 1;
+                    this.status = 'active';
                     this.setInitData(this.$state); // Reset initial data to the current state after successful save
                 })
                 .catch(error => {
@@ -90,7 +95,7 @@ export const useSizeChartEditStore = defineStore('sizeChartEdit', {
                 });
         },
         resetPublish() {
-            this.status = 1;
+            this.status = 'active';
         },
 
         //Delete and modal

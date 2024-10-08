@@ -4,11 +4,12 @@ import {router, usePage} from "@inertiajs/vue3";
 import {ColorPicker, LayoutSection, TextField} from "@ownego/polaris-vue";
 import LegacyTabs from "@/Shared/Polaris/LegacyTabs.vue";
 import Icon from "@/Shared/Polaris/Icon.vue";
-import ThumbnailBorder from "@/Shared/Thumbnail/ThumbnailBorder.vue";
+import ChooseButtonIcon from "../Shared/ChooseImg/ChooseButtonIcon.vue";
+import ChooseBorderIcon from "../Shared/ChooseImg/ChooseBorderIcon.vue"
 import ColorFiled from "@/Shared/ColorPicker/ColorFiled.vue";
 import ColorFieldInner from "@/Shared/ColorPicker/ColorFieldInner.vue";
 import FrameContextualSaveBar from "@/Shared/PolarisCotextBar/FrameContextualSaveBar.vue";
-import ContextualSaveBar from "@/Shared/PolarisCotextBar/ContextualSaveBar.vue";
+import ContextualSaveBar from "../Shared/PolarisCotextBar/ContextualSaveBar.vue";
 
 // Initialize the Pinia store
 const { widgetOptions } = usePage().props;
@@ -23,17 +24,16 @@ store.setInitData(widgetOptions);
         <template #title>{{ store.modalTitle }}</template>
         <p>{{ store.modalContent }}</p>
     </Modal>
-
     <form @submit.prevent="store.handleSubmit()">
-
         <FrameContextualSaveBar v-if="store.hasChanges() && !store.isSubmitting" logo="https://cdn.shopify.com/s/files/1/2376/3301/files/Shopify_Secondary_Inverted.png">
             <ContextualSaveBar @discard="store.showDiscardModal()" :processing="store.processing" title="Unsaved size chart!"/>
         </FrameContextualSaveBar>
-
-        <Page title="Size Chart" compactTitle
-              :backAction="{ content: 'Products', onAction: () => router.visit('/') }"
-              :secondaryActions="[{content: 'Tutorial',onAction: () => console.log('Tutorial'),}]"
-              :actionGroups="[{title: 'Active', actions: [{content: 'Deactive Size Chart',onAction: () => console.log('Deactive Size Chart action'),}],}]"
+        <Page
+            title="Size Chart"
+            compactTitle
+            :backAction="{ content: 'Products', onAction: () => router.visit('/') }"
+            :secondaryActions="[{content: 'Tutorial',onAction: () => console.log('Tutorial'),}]"
+            :actionGroups="[{title: 'Active', actions: [{content: 'Deactive Size Chart',onAction: () => console.log('Deactive Size Chart action'),}],}]"
         >
 
             <Layout>
@@ -49,27 +49,21 @@ store.setInitData(widgetOptions);
                 <!--Button style-->
                 <LayoutSection>
                     <InlineGrid style="--pc-inline-grid-grid-template-columns-xs: 1fr; --pc-inline-grid-grid-template-columns-md: 2fr 5fr; --pc-inline-grid-gap-xs: var(--p-space-400);">
-                        <Box>
-                            <Text variant="headingMd" as="h6">Button style</Text>
-                        </Box>
+                        <Box><Text variant="headingMd" as="h6">Button style</Text></Box>
                         <LegacyCard title="Icon">
                             <LegacyCardSection>
-
                                 <BlockStack gap="500">
-
                                     <Box>
                                         <InlineGrid style="--pc-inline-grid-grid-template-columns-xs: repeat(4, minmax(0, 1fr)); --pc-inline-grid-grid-template-columns-sm: repeat(5, minmax(0, 1fr)); --pc-inline-grid-grid-template-columns-md: repeat(7, minmax(0, 1fr)); --pc-inline-grid-gap-xs: var(--p-space-300);">
                                             <!-- v-for loop to render icons -->
-                                            <Box v-for="(icon, index) in store.icons" :key="index" class="Apex-ButtonStyle__Option"
-                                                 :class="{ 'selected': store.chart_icon === icon.value }" @click="store.selectIcon(icon.value)"
-                                                 :style="{borderColor: store.chart_icon === icon.value ? 'var(--p-color-border-emphasis)' : 'transparent',borderStyle: 'solid',borderWidth: '2px'}"
-                                            >
-                                                <ThumbnailIcon :src="icon.src"/>
-                                            </Box>
+                                            <ChooseButtonIcon
+                                                :icons="store.icons"
+                                                :selectIcon="store.selectIcon"
+                                                :selectedIcon="store.chart_icon">
+                                            </ChooseButtonIcon>
 
                                         </InlineGrid>
                                     </Box>
-
 
                                     <BlockStack>
                                         <Box style="--pc-box-background: var(--p-color-bg-surface-secondary); --pc-box-border-color: transparent; --pc-box-border-style: solid; --pc-box-border-radius: var(--p-border-radius-200); --pc-box-border-width: var(--p-border-width-050); --pc-box-padding-block-start-xs: var(--p-space-300); --pc-box-padding-block-end-xs: var(--p-space-300); --pc-box-padding-inline-start-xs: var(--p-space-300); --pc-box-padding-inline-end-xs: var(--p-space-300);">
@@ -95,34 +89,28 @@ store.setInitData(widgetOptions);
                 <!--Table Style-->
                 <LayoutSection>
                     <InlineGrid style="--pc-inline-grid-grid-template-columns-xs: 1fr; --pc-inline-grid-grid-template-columns-md: 2fr 5fr; --pc-inline-grid-gap-xs: var(--p-space-400);">
-                        <Box>
-                            <Text variant="headingMd" as="h6">Table Style</Text>
-                        </Box>
+                        <Box><Text variant="headingMd" as="h6">Table Style</Text></Box>
                         <LegacyCard>
                             <LegacyCardSection>
                                 <BlockStack gap="200">
-
                                     <InlineStack gap="100" block-align="center">
                                         <Text variant="headingMd" as="h6">Choose a table design</Text>
                                         <Tooltip content="These styles are applied globally to all size charts. Any specific style settings applied in the table editor will only be applied to the corresponding size charts. Also, they only apply to the storefront and are not reflected in the table editor.">
                                             <Icon :source="store.infoIcon" />
                                         </Tooltip>
                                     </InlineStack>
-
                                     <Box>
                                         <InlineGrid style="--pc-inline-grid-grid-template-columns-sm: repeat(1, minmax(0, 1fr)); --pc-inline-grid-grid-template-columns-md: repeat(3, minmax(0, 1fr)); --pc-inline-grid-gap-xs: var(--p-space-300);">
 
                                             <!-- v-for loop to render borders -->
-                                            <Box v-for="(border, index) in store.borders" :key="index"class="Apex-TableStyle__Option"
-                                                 :class="{'selected': store.chart_border === border.value }"  @click="store.selectBorder(border.value)"
-                                                 :style="{'--pc-box-border-color': store.chart_border === border.value ? 'var(--p-color-border-emphasis)' : 'var(--p-color-border-disabled)', }"
-                                            >
-                                                <ThumbnailBorder :src="border.src" :value="border.value"/>
-                                            </Box>
+                                            <ChooseBorderIcon
+                                                :borders="store.borders"
+                                                :selectBorder="store.selectBorder"
+                                                :selectedBorder="store.chart_border">
+                                            </ChooseBorderIcon>
 
                                         </InlineGrid>
                                     </Box>
-
                                     <BlockStack>
                                         <Box>
                                             <Select
@@ -211,42 +199,3 @@ store.setInitData(widgetOptions);
         </Page>
     </form>
 </template>
-
-<style scoped>
-
-/*Button Style Icon*/
-.Apex-ButtonStyle__Option{
-    --pc-box-border-color: var(--p-color-border-emphasis);
-    --pc-box-border-style: solid;
-    --pc-box-border-radius: var(--p-border-radius-100);
-    --pc-box-border-width: var(--p-border-width-050);
-    --pc-box-padding-block-start-xs: var(--p-space-200);
-    --pc-box-padding-block-end-xs: var(--p-space-200);
-    --pc-box-padding-inline-start-xs: var(--p-space-200);
-    --pc-box-padding-inline-end-xs: var(--p-space-200);
-
-    &:hover:not(.selected) {
-        border-color: #c0bcbc !important;
-    }
-}
-/*Table Style Border*/
-.Apex-TableStyle__Option {
-
-    --pc-box-border-style: solid;
-    --pc-box-border-radius: var(--p-border-radius-200);
-    --pc-box-border-width: var(--p-border-width-050);
-    --pc-box-padding-block-start-xs: var(--p-space-200);
-    --pc-box-padding-block-end-xs: var(--p-space-200);
-    --pc-box-padding-inline-start-xs: var(--p-space-200);
-    --pc-box-padding-inline-end-xs: var(--p-space-200);
-    max-width: 100%;
-    max-height: 100%;
-    min-width: 100%;
-    min-height: 100%;
-
-    /* Hover effect */
-    &:hover:not(.selected) {
-        border-color: #c0bcbc !important;
-    }
-}
-</style>

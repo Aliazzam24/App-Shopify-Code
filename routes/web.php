@@ -22,35 +22,32 @@ Route::get('/', function () {
 });
 
 
-Route::get('/polaris',[SizeChartController::class,'polaris'])->name('polaris');
-
-
-//Visitor Counter
+//Visitor Counter. Page
 Route::get('app/visitor_counter',[VisitorCounterController::class,'index'])->name('visitor.counter');
 Route::post('/visitor/update', [VisitorCounterController::class, 'update'])->name('visitor.update');
 
-//Size Chart
+
+//Size Chart List. Page
 Route::get('app/size_chart/list',[SizeChartController::class,'SizeChartList'])->name('app.size.chart.list');
-Route::get('app/size_chart/create',[SizeChartController::class,'createSizeChart'])->name('size-charts.create');
-Route::get('app/size_chart/edit/{id}',[SizeChartController::class,'editSizeChart'])->name('size-charts.edit');;
-
-Route::post('/create-size-charts', [SizeChartController::class, 'create'])->name('create.size-charts');
-Route::put('/update-size-charts/{id}', [SizeChartController::class, 'update'])->name('update.size-charts');
 Route::delete('delete/size_chart/{id}',[SizeChartController::class,'DeleteSizeChart'])->name('delete.size.chart');
-
 Route::delete('delete/selected_size_charts', [SizeChartController::class, 'deleteSelectedSizeCharts']);
-//Route::delete('delete/selected_size_charts', [SizeChartController::class, 'DeleteSelectedCharts'])->name('delete.selected.size.charts');
 Route::post('deactivate/selected_size_charts', [SizeChartController::class, 'deactivateSelectedCharts']);
-
-// Route to duplicate a size chart
-//Route::post('duplicate/size_chart/{id}', [SizeChartController::class, 'DuplicateSizeChart'])->name('duplicate.size.chart');
 Route::post('duplicate/size_chart/{id}', [SizeChartController::class, 'DuplicateSizeChart'])->name('duplicate.size.chart');
 
+
+//Size Chart Create. Page
+Route::get('app/size_chart/create',[SizeChartController::class,'createSizeChart'])->name('size-charts.create');
+Route::post('/create-size-charts', [SizeChartController::class, 'create'])->name('create.size-charts');
+
+
+//Size Chart Edit. Page
+Route::get('app/size_chart/edit/{id}',[SizeChartController::class,'editSizeChart'])->name('size-charts.edit');;
+Route::put('/update-size-charts/{id}', [SizeChartController::class, 'update'])->name('update.size-charts');
 Route::put('size/chart/duplicate/edit', [SizeChartController::class, 'duplicateEditPage']);
-
-
 Route::delete('size/chart/delete',[SizeChartController::class,'sizeChartDelete']);
 Route::post('publish/status/chart',[SizeChartController::class,'publishStatusChart']);
 
 
-//Route::post('/delete-selected-size-charts', [SizeChartController::class, 'deleteSelectedSizeCharts']);
+//Size Chart Setting. Page
+Route::get('/app/size_chart/setting',[SizeChartController::class,'SizeChartSetting'])->name('app.size.chart.setting');;
+Route::put('/update-setting-size-charts', [SizeChartController::class, 'updateSettingSizeCharts'])->name('update-setting-size-charts');

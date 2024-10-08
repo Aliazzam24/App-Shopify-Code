@@ -1,18 +1,14 @@
 <script setup>
-import {defineProps, ref} from "vue";
+import {defineProps} from "vue";
 import {router} from "@inertiajs/vue3";
-import HeaderEditTable from "../Shared/Header/HeaderEditTable.vue";
-import TableEdit from "../Components/TableEdit.vue";
-import CardSection from "@/Shared/Polaris/CardSection.vue";
-import Layout from "@/Shared/Polaris/Layout.vue";
-import PolarisLayoutSection from "@/Shared/Polaris/PolarisLayoutSection.vue";
-import SectionThird from "@/Shared/Polaris/SectionThird.vue";
-import CardLegacy from "@/Shared/Polaris/CardLegacy.vue";
-import Label from "@/Shared/PolarisText/Label.vue";
+import HeaderChartTable from "../Shared/Header/HeaderChartTable.vue";
+import ChartTable from "@/Components/ChartTable.vue";
+import Label from "../Shared/PolarisText/Label.vue";
 import Text from "@/Shared/PolarisText/Text.vue";
 import FrameContextualSaveBar from "../Shared/PolarisCotextBar/FrameContextualSaveBar.vue";
 import ContextualSaveBar from "../Shared/PolarisCotextBar/ContextualSaveBar.vue";
 import {useSizeChartEditStore} from '../Stores/sizeChartEdit.js';
+import {LayoutSection} from "@ownego/polaris-vue";
 
 const props = defineProps({
     sizeChart: Object,
@@ -28,13 +24,7 @@ store.setSizeChartData({...store.$state});
     <Modal sectioned :open="store.active" :primary-action="store.primaryAction" :secondary-actions="store.secondaryActions" @close="store.active = false">
         <template #title>{{ store.modalTitle }}</template>
         <p>{{ store.modalContent }}</p>
-
-        <TextField
-            v-if="store.modalDuplicate"
-            v-model="store.Name"
-            label="Name for new size chart"
-            autoComplete="off"
-        />
+        <TextField v-if="store.modalDuplicate" v-model="store.Name" label="Name for new size chart" autoComplete="off"/>
     </Modal>
 
     <form @submit.prevent="store.handleSubmit()">
@@ -50,65 +40,52 @@ store.setSizeChartData({...store.$state});
              ]"
         >
             <template #pageTitle>
-                <Badge v-if="store.status == 1" tone="success">Active</Badge>
-                <Badge v-else-if="store.status == 0" tone="info">Draft</Badge>
+                <Badge v-if="store.status == 'active'" tone="success">Active</Badge>
+                <Badge v-else-if="store.status == 'draft'" tone="info">Draft</Badge>
             </template>
 
             <Layout>
 
-                <!--layout section-->
-                <PolarisLayoutSection>
-                    <Layout>
+                <LayoutSection>
 
-                        <!--section 1-->
-                        <CardSection title="Visibility">
-                            <div class="Apex-ShopifyEntitySelection">
-                                <div class="Polaris-BlockStack"
-                                     style="--pc-block-stack-order: column; --pc-block-stack-gap-xs: var(--p-space-400);">
-                                    <div class="Polaris-BlockStack" style="--pc-block-stack-order: column;">
+                    <LegacyCard title="Visibility">
+                        <LegacyCardSection>
+                            <BlockStack gap="400">
+                                <BlockStack>
+                                    <RadioButton id="any" value="any" v-model="store.set_product" label="Any product"/>
+                                    <RadioButton id="specific" value="specific" v-model="store.set_product" label="Specific product or collection"/>
+                                </BlockStack>
 
-                                        <RadioButton id="any" value="any" v-model="store.set_product"
-                                                     label="Any product"/>
-                                        <RadioButton id="specific" value="specific" v-model="store.set_product"
-                                                     label="Specific product or collection"/>
-
-                                    </div>
-
-
-                                    <div v-if="store.set_product === 'specific'">
-                                        Specific Product
-                                    </div>
-
+                                <div v-if="store.set_product === 'specific'">
+                                    Specific Product
                                 </div>
-                            </div>
-                        </CardSection>
-                        <!-- end-->
 
-                        <!--section table-->
-                        <CardSection title="Size Chart">
-                            <div class="Polaris-InlineStack"
-                                 style="--pc-inline-stack-align: space-between; --pc-inline-stack-wrap: wrap; --pc-inline-stack-gap-xs: var(--p-space-400); --pc-inline-stack-flex-direction-xs: row;">
+                            </BlockStack>
+                        </LegacyCardSection>
+                    </LegacyCard>
 
+                    <LegacyCard title="Size Chart">
+                        <LegacyCardSection>
+                            <InlineStack gap="400" align="space-between" block-align="center" wrap="wrap">
                                 <!--Header Table-->
-                                <HeaderEditTable
+                                <HeaderChartTable
                                     @AddColumn="store.addColumn"
                                     @RemoveColumn="store.removeColumn"
                                     @AddRow="store.addRow"
                                     @RemoveRow="store.removeRow()"
                                     @EraseContent="store.showEraseModal"
                                 />
-                                <!--add column and row-->
 
                                 <!--Table-->
-                                <TableEdit :tableData="store.tableData"/>
+                                <ChartTable :tableData="store.tableData"/>
                                 <!--End-->
 
-                            </div>
-                        </CardSection>
-                        <!--end-->
+                            </InlineStack>
+                        </LegacyCardSection>
+                    </LegacyCard>
 
-                        <!--section 3-->
-                        <CardSection title="Measurement instructions">
+                    <LegacyCard title="Measurement instructions">
+                        <LegacyCardSection>
                             <div class="Vtl-FormSettingStack__FieldList">
                                 <div class="Vtl-FormSettingStack__FieldItem Vtl-FormSettingStack__FieldItem--Options">
                                     <div class="form-setting">
@@ -144,43 +121,37 @@ store.setSizeChartData({...store.$state});
                                     </div>
                                 </div>
                             </div>
-                        </CardSection>
-                        <!--end-->
+                        </LegacyCardSection>
+                    </LegacyCard>
 
-                    </Layout>
-                </PolarisLayoutSection>
-                <!--end-->
+                </LayoutSection>
 
-                <!--section third-->
-                <SectionThird>
-                    <Layout>
+                <LayoutSection variant="oneThird">
 
-                        <!--status-->
-                        <CardLegacy>
-                            <select v-model="store.status">
-                                <option v-for="option in store.statusOption" :value="option.value" :key="option.value">
-                                    {{ option.label }}
-                                </option>
-                            </select>
-<!--                            <Select label="Status" :options="store.statusOption" v-model="store.status" />-->
-                        </CardLegacy>
+                    <LegacyCard>
+                        <LegacyCardSection>
+                            <Select v-model="store.status" :options="store.statusOption" label="Status"/>
+                        </LegacyCardSection>
+                    </LegacyCard>
 
-                        <CardLegacy>
+                    <LegacyCard>
+                        <LegacyCardSection>
                             <Label title="Title"/>
                             <TextField v-model="store.titlePopup" autoComplete="off"/>
                             <Text title="This title will be displayed in the Size Chart pop-up and visible to your clients."/>
-                        </CardLegacy>
+                        </LegacyCardSection>
+                    </LegacyCard>
 
-                        <CardLegacy>
+                    <LegacyCard>
+                        <LegacyCardSection>
                             <Label title="Internal name"/>
                             <TextField v-model="store.internalName" autoComplete="off"/>
                             <Text title="The private name of this Size Chart. Only you will see this."/>
+                        </LegacyCardSection>
+                    </LegacyCard>
 
-                        </CardLegacy>
+                </LayoutSection>
 
-                    </Layout>
-                </SectionThird>
-                <!--end-->
 
                 <!--fotter-->
                 <div class="Polaris-Layout__Section Polaris-Layout__Section--fullWidth">
@@ -200,10 +171,10 @@ store.setSizeChartData({...store.$state});
 
                             <div class="Polaris-LegacyStack__Item">
                                 <div class="Polaris-ButtonGroup">
-                                    <div v-if="store.status === 0" class="Polaris-ButtonGroup__Item">
+                                    <div v-if="store.status === 'draft'" class="Polaris-ButtonGroup__Item">
 
                                         <button
-                                            v-bind:disabled="store.status === 1 || !store.hasChanges() || store.processing"
+                                            v-bind:disabled="store.status === 'active' || !store.hasChanges() || store.processing"
                                             class="Polaris-Button Polaris-Button--pressable Polaris-Button--variantSecondary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter"
                                             aria-disabled="false"
                                             type="submit">
@@ -217,7 +188,7 @@ store.setSizeChartData({...store.$state});
 
                                     <div class="Polaris-ButtonGroup__Item">
 
-                                        <button v-if="store.status === 1"
+                                        <button v-if="store.status === 'active'"
                                                 v-bind:disabled="!store.hasChanges() || store.processing "
                                                 class="Polaris-Button Polaris-Button--pressable Polaris-Button--variantPrimary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter"
                                                 aria-disabled="false" type="submit">
@@ -228,7 +199,7 @@ store.setSizeChartData({...store.$state});
 
 
                                         <button
-                                            v-if="!store.hasChanges() && store.status === 0"
+                                            v-if="!store.hasChanges() && store.status === 'draft'"
                                             @click="store.PublishStatusChart()"
                                             v-bind:disabled="store.processing"
                                             class="Polaris-Button Polaris-Button--pressable Polaris-Button--variantPrimary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter">
@@ -240,7 +211,7 @@ store.setSizeChartData({...store.$state});
 
                                         <!-- if hasChanges but the status is still draft, show 'Publish Changes' button -->
                                         <button
-                                            v-else-if="store.hasChanges() && store.status === 0"
+                                            v-else-if="store.hasChanges() && store.status === 'draft'"
                                             @click="store.resetPublish()"
                                             v-bind:disabled="store.processing"
                                             class="Polaris-Button Polaris-Button--pressable Polaris-Button--variantPrimary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter">
@@ -262,7 +233,7 @@ store.setSizeChartData({...store.$state});
 
             </Layout>
 
-            <div class="Polaris-Box" style="--pc-box-min-height: 108px;"></div>
+            <Box style="--pc-box-min-height: 108px;"></Box>
         </Page>
     </form>
 </template>

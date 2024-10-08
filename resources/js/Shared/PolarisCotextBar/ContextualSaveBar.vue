@@ -54,8 +54,8 @@
 
 <style scoped>
 .spinner-polaris-style{
-    padding-right: 2px;
-    padding-left: 2px;
+    padding-right: 0.8px;
+    padding-left: 0.8px;
 }
 </style>
 
